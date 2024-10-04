@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>AI Candidate Screening</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AI Candidate Screening</h1>
+        <form id="candidateForm">
+            <label for="responses">Enter Candidate Responses (comma-separated):</label>
+            <textarea id="responses" rows="5" required></textarea>
+            <button type="submit">Evaluate</button>
+        </form>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        document.getElementById('candidateForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const responses = document.getElementById('responses').value.split(',');
+            const response = await fetch('/evaluate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ responses })
+            });
+            const results = await response.json();
+            displayResults(results);
+        };
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Evaluation Results:</h2>';
+            results.forEach(result => {
+                resultsDiv.innerHTML += `<p>Response: ${result.response.trim()}, Score: ${result.score}</p>`;
+            });
+        }
+        
+</script>
+</body>
+</html>        
